@@ -21,7 +21,7 @@ def seed_database():
     print('[Seed] Creating demo data...')
 
     # ---- Admin ----
-    admin = User(name='Vikram Chauhan', email='admin@hikershub.com', role=ROLE_ADMIN)
+    admin = User(name='Maanvardhan Singh', email='admin@hikershub.com', role=ROLE_ADMIN)
     admin.set_password('Admin@123')
     db.session.add(admin)
 
