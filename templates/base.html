@@ -8,36 +8,47 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-      <img src="/static/images/logo.png" alt="HikersHub" height="40">
-      <span style="color:#000000; font-weight:bold;">HikersHub</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="/treks">Treks</a></li>
-        {% if current_user.is_authenticated %}
-          {% if current_user.role == 'admin' %}
-            <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Admin</a></li>
-          {% elif current_user.role == 'staff' %}
-            <li class="nav-item"><a class="nav-link" href="/staff/dashboard">Staff</a></li>
+
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#000000;">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <img src="/static/images/logo.png"
+             alt="HikersHub"
+             height="40"
+             style="filter: brightness(0) invert(1);">
+        <span style="color:#ffffff; font-weight:bold;">HikersHub</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="/treks">Treks</a></li>
+
+          {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+              <li class="nav-item"><a class="nav-link text-white" href="/admin/dashboard">Admin</a></li>
+            {% elif current_user.role == 'staff' %}
+              <li class="nav-item"><a class="nav-link text-white" href="/staff/dashboard">Staff</a></li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link text-white" href="/user/dashboard">Dashboard</a></li>
+            {% endif %}
+
+            <li class="nav-item"><a class="nav-link text-white" href="/auth/logout">Logout</a></li>
+
           {% else %}
-            <li class="nav-item"><a class="nav-link" href="/user/dashboard">Dashboard</a></li>
+
+            <li class="nav-item"><a class="nav-link text-white" href="/auth/login">Login</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/auth/register">Register</a></li>
+
           {% endif %}
-          <li class="nav-item"><a class="nav-link" href="/auth/logout">Logout</a></li>
-        {% else %}
-          <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
-        {% endif %}
-      </ul>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
   <main>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -52,6 +63,7 @@
         </div>
       {% endif %}
     {% endwith %}
+
     {% block content %}{% endblock %}
   </main>
 
