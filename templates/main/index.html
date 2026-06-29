@@ -1,49 +1,100 @@
 {% extends 'base.html' %}
 {% block title %}HikersHub - Explore Treks{% endblock %}
+
 {% block content %}
 
-<div class="text-white py-5 text-center" style="
-  background-image: url('/static/images/hero.jpg');
-  background-size: cover;
-  background-position: center;
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-  position: relative;">
-  <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);"></div>
-  <div class="container" style="position:relative;z-index:1;">
-    <h1 class="display-4 fw-bold text-center" style="color:#ffffff;">Discover Amazing Treks</h1>
-	<p class="text-center" style="color:#ffffff; font-size:1.2rem;">Find your next adventure in the mountains</p>
+<!-- HERO SECTION -->
+<section
+    class="d-flex align-items-center justify-content-center text-center text-white"
+    style="
+        background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                    url('/static/images/main.jpg.png');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        height: calc(100vh - 56px);
+        width: 100%;
+    ">
 
-    <a href="/treks" class="btn btn-light btn-lg mt-3">Browse All Treks</a>
-  </div>
-</div>
+    <div class="container">
+        <h1 class="display-2 fw-bold mb-3">
+            Discover Amazing Treks
+        </h1>
 
-<div class="container py-5">
-  <h2 class="text-center mb-4">Featured Treks</h2>
-  <div class="row g-4">
-    {% if featured %}
-      {% for trek in featured %}
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">{{ trek.name }}</h5>
-            <p class="card-text text-muted">{{ trek.description[:100] }}...</p>
-            <span class="badge bg-success">{{ trek.difficulty }}</span>
-            <span class="badge bg-secondary">{{ trek.duration_days }} days</span>
-          </div>
-          <div class="card-footer">
-            <a href="/treks/{{ trek.id }}" class="btn btn-outline-success w-100">View Details</a>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="col text-center">
-        <p class="text-muted">No treks available yet. Check back soon!</p>
-      </div>
-    {% endif %}
-  </div>
-</div>
+        <p class="lead mb-4" style="font-size:1.4rem;">
+            Find your next adventure in the mountains
+        </p>
+
+        <a href="/treks" class="btn btn-light btn-lg px-5 py-3">
+            Browse All Treks
+        </a>
+    </div>
+
+</section>
+
+<!-- FEATURED TREKS -->
+<section class="container py-5">
+
+    <h2 class="text-center mb-5">Featured Treks</h2>
+
+    <div class="row g-4">
+
+        {% if featured %}
+
+            {% for trek in featured %}
+
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            {{ trek.name }}
+                        </h5>
+
+                        <p class="card-text text-muted">
+                            {{ trek.description[:100] }}...
+                        </p>
+
+                        <span class="badge bg-success">
+                            {{ trek.difficulty }}
+                        </span>
+
+                        <span class="badge bg-secondary">
+                            {{ trek.duration_days }} days
+                        </span>
+
+                    </div>
+
+                    <div class="card-footer bg-white">
+
+                        <a href="/treks/{{ trek.id }}"
+                           class="btn btn-outline-success w-100">
+                            View Details
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="col text-center">
+                <p class="text-muted">
+                    No treks available yet.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
 
 {% endblock %}
+```
