@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>Staff Dashboard</title></head>
+<body>
+  <h1>Staff Dashboard</h1>
+  <h2>All Treks</h2>
+  <ul>
+    {% for trek in treks %}
+      <li>{{ trek.name }}</li>
+    {% endfor %}
+  </ul>
+  <h2>All Bookings</h2>
+  <ul>
+    {% for booking in bookings %}
+      <li>{{ booking.id }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

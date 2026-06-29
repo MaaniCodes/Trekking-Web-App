@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Browse Treks - HikersHub{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+  <h2 class="mb-4">All Treks</h2>
+  <div class="row g-4">
+    {% if treks %}
+      {% for trek in treks %}
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ trek.name }}</h5>
+            <p class="card-text text-muted">{{ trek.description[:100] }}...</p>
+            <span class="badge bg-success">{{ trek.difficulty }}</span>
+            <span class="badge bg-secondary">{{ trek.duration_days }} days</span>
+            <span class="badge bg-info text-dark">₹{{ trek.price }}</span>
+          </div>
+          <div class="card-footer">
+            <a href="/treks/{{ trek.id }}" class="btn btn-outline-success w-100">View Details</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="col text-center">
+        <p class="text-muted">No treks available yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

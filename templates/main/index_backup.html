@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}HikersHub - Explore Treks{% endblock %}
+{% block content %}
+
+<div class="bg-success text-white py-5 text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold"><i class="fas fa-mountain"></i> Discover Amazing Treks</h1>
+    <p class="lead">Find your next adventure in the mountains</p>
+    <a href="/treks" class="btn btn-light btn-lg mt-3">Browse All Treks</a>
+  </div>
+</div>
+
+<div class="container py-5">
+  <h2 class="text-center mb-4">Featured Treks</h2>
+  <div class="row g-4">
+    {% if featured %}
+      {% for trek in featured %}
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ trek.name }}</h5>
+            <p class="card-text text-muted">{{ trek.description[:100] }}...</p>
+            <span class="badge bg-success">{{ trek.difficulty }}</span>
+            <span class="badge bg-secondary">{{ trek.duration_days }} days</span>
+          </div>
+          <div class="card-footer">
+            <a href="/treks/{{ trek.id }}" class="btn btn-outline-success w-100">View Details</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="col text-center">
+        <p class="text-muted">No treks available yet. Check back soon!</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
