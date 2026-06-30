@@ -8,15 +8,21 @@
     {% if treks %}
       {% for trek in treks %}
       <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow border-0 rounded-4 overflow-hidden">
+          {% set trek_photos = ['kedarkantha_summit.png', 'hampta_pass.png', 'valley_of_flowers.png'] %}
+          {% set trek_img = trek_photos[((trek.image_num or 1) - 1) % 3] %}
+          <img src="/static/images/{{ trek_img }}"
+               class="card-img-top"
+               style="height:200px; object-fit:cover;"
+               alt="{{ trek.name }}">
           <div class="card-body">
             <h5 class="card-title">{{ trek.name }}</h5>
             <p class="card-text text-muted">{{ trek.description[:100] }}...</p>
             <span class="badge bg-success">{{ trek.difficulty }}</span>
             <span class="badge bg-secondary">{{ trek.duration_days }} days</span>
-            <span class="badge bg-info text-dark">₹{{ trek.price }}</span>
+            <span class="badge bg-info text-dark">₹{{ trek.price_per_person }}</span>
           </div>
-          <div class="card-footer">
+          <div class="card-footer bg-white border-0">
             <a href="/treks/{{ trek.id }}" class="btn btn-outline-success w-100">View Details</a>
           </div>
         </div>
