@@ -1,8 +1,8 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, abort
 from flask_login import current_user, login_required
 from blueprints.main import main_bp
 from extensions import db
-from models import Trek, User, Booking, TREK_OPEN, TREK_COMPLETED, ROLE_TREKKER, ROLE_STAFF, BOOKING_BOOKED
+from models import Trek, User, Booking, TREK_OPEN, ROLE_TREKKER, ROLE_STAFF, ROLE_ADMIN, BOOKING_BOOKED
 
 
 @main_bp.route('/')
@@ -59,10 +59,17 @@ def browse_treks():
 def trek_detail(trek_id):
     trek = db.get_or_404(Trek, trek_id)
 
+    # Non-admin, non-staff users can only view Open treks
+    if trek.status != TREK_OPEN:
+        if not current_user.is_authenticated or current_user.role == ROLE_TREKKER:
+            abort(404)
+
     already_booked = False
     if current_user.is_authenticated and current_user.is_trekker:
         already_booked = Booking.query.filter_by(
-            user_id=current_user.id, trek_id=trek_id, status=BOOKING_BOOKED
+            user_id=current_user.id,
+            trek_id=trek_id,
+            status=BOOKING_BOOKED
         ).first() is not None
 
     return render_template('main/trek_detail.html', trek=trek, already_booked=already_booked)

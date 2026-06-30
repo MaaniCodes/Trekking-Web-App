@@ -62,19 +62,19 @@ def treks_list():
 @admin_required
 def trek_new():
     form = TrekForm()
-    # Populate staff dropdown
     staff_list = User.query.filter_by(role=ROLE_STAFF, is_staff_approved=True, is_blacklisted=False).all()
     form.assign_staff.choices = [(0, '— No guide assigned yet —')] + [(s.id, s.name) for s in staff_list]
 
     if form.validate_on_submit():
+        total_slots = form.total_slots.data
         trek = Trek(
             name=form.name.data.strip(),
             location=form.location.data.strip(),
             description=form.description.data.strip() if form.description.data else None,
             difficulty=form.difficulty.data,
             duration_days=form.duration_days.data,
-            total_slots=form.total_slots.data,
-            available_slots=form.available_slots.data,
+            total_slots=total_slots,
+            available_slots=total_slots,  # always equals total on creation
             price_per_person=form.price_per_person.data,
             max_altitude=form.max_altitude.data.strip() if form.max_altitude.data else None,
             meeting_point=form.meeting_point.data.strip() if form.meeting_point.data else None,
@@ -106,13 +106,27 @@ def trek_edit(trek_id):
         form.assign_staff.data = trek.assigned_staff_id or 0
 
     if form.validate_on_submit():
+        total_slots = form.total_slots.data
+        booked_count = trek.booked_count
+
+        # available slots can't exceed total slots
+        # and can't go below currently active bookings
+        new_available = total_slots - booked_count
+        if new_available < 0:
+            flash(
+                f'Cannot set total slots to {total_slots} — '
+                f'there are already {booked_count} active bookings.',
+                'danger'
+            )
+            return render_template('admin/trek_form.html', form=form, trek=trek, title='Edit Trek')
+
         trek.name = form.name.data.strip()
         trek.location = form.location.data.strip()
         trek.description = form.description.data.strip() if form.description.data else None
         trek.difficulty = form.difficulty.data
         trek.duration_days = form.duration_days.data
-        trek.total_slots = form.total_slots.data
-        trek.available_slots = form.available_slots.data
+        trek.total_slots = total_slots
+        trek.available_slots = new_available  # recalculated from bookings
         trek.price_per_person = form.price_per_person.data
         trek.max_altitude = form.max_altitude.data.strip() if form.max_altitude.data else None
         trek.meeting_point = form.meeting_point.data.strip() if form.meeting_point.data else None
@@ -134,7 +148,6 @@ def trek_edit(trek_id):
 def trek_delete(trek_id):
     trek = db.get_or_404(Trek, trek_id)
     name = trek.name
-    # Remove associated bookings first
     Booking.query.filter_by(trek_id=trek_id).delete()
     db.session.delete(trek)
     db.session.commit()
@@ -264,3 +277,36 @@ def bookings_list():
         )
     bookings = query.order_by(Booking.booking_date.desc()).all()
     return render_template('admin/bookings.html', bookings=bookings, status_filter=status_filter, q=q)
+
+
+# --- Booking Status Management ---
+
+@admin_bp.route('/bookings/<int:booking_id>/status', methods=['POST'])
+@login_required
+@admin_required
+def booking_update_status(booking_id):
+    booking = db.get_or_404(Booking, booking_id)
+    new_status = request.form.get('status', '').strip()
+
+    valid_statuses = ['Booked', 'Cancelled', 'Completed']
+    if new_status not in valid_statuses:
+        flash('Invalid booking status.', 'danger')
+        return redirect(url_for('admin.bookings_list'))
+
+    old_status = booking.status
+
+    # If cancelling an active booking, free up the slot
+    if new_status == 'Cancelled' and old_status == 'Booked':
+        booking.trek.available_slots += 1
+
+    # If reinstating a cancelled booking, decrement the slot
+    if new_status == 'Booked' and old_status == 'Cancelled':
+        if booking.trek.available_slots <= 0:
+            flash('Cannot reinstate — no available slots on this trek.', 'danger')
+            return redirect(url_for('admin.bookings_list'))
+        booking.trek.available_slots -= 1
+
+    booking.status = new_status
+    db.session.commit()
+    flash(f'Booking #{booking_id} status updated to {new_status}.', 'success')
+    return redirect(url_for('admin.bookings_list'))
